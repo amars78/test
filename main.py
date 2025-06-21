@@ -1,66 +1,138 @@
 import streamlit as st
 
-# 🌟 Page Configuration
-st.set_page_config(page_title="MBTI 직업 추천", page_icon="🧠", layout="centered")
+# 페이지 설정 🖥️
+st.set_page_config(
+    page_title="MBTI 진로 탐색기 🧐",
+    page_icon="✨",
+    layout="centered",
+    initial_sidebar_state="expanded"
+)
 
-# 🌈 Custom CSS for colorful and bold text
-st.markdown("""
-    <style>
-        .title {
-            font-size: 40px;
-            text-align: center;
-            font-weight: bold;
-            color: #ff4b4b;
-        }
-        .subtitle {
-            font-size: 24px;
-            text-align: center;
-            color: #5f9ea0;
-        }
-        .result-box {
-            background-color: #ffe4e1;
-            border-radius: 15px;
-            padding: 20px;
-            margin-top: 20px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-        }
-    </style>
-""", unsafe_allow_html=True)
+# --- 제목과 소개 ---
+st.title("🌟 MBTI 진로 탐색기: 당신의 잠재력을 찾아보세요! 🚀")
+st.markdown("### 당신의 MBTI는 무엇인가요? 🤔 이 앱이 당신에게 딱 맞는 직업을 추천해 드릴게요! 🌈")
+st.write("---")
 
-# 🎉 Title and Intro
-st.markdown('<div class="title">💡 MBTI로 알아보는 직업 추천 💼</div>', unsafe_allow_html=True)
-st.markdown('<div class="subtitle">당신의 MBTI 유형을 선택하면<br>어울리는 직업을 추천해드려요! 🌟</div>', unsafe_allow_html=True)
-st.markdown("---")
+# --- MBTI 선택 섹션 ---
+st.header("1. 당신의 MBTI를 선택해주세요! 👇")
 
-# 🔮 MBTI 직업 데이터
-mbti_jobs = {
-    "INTJ": ("전략가", ["데이터 사이언티스트 🤖", "시스템 엔지니어 🛠️", "정책 분석가 🧾"]),
-    "INFP": ("중재자", ["작가 ✍️", "상담가 🗣️", "예술가 🎨"]),
-    "ENTP": ("토론가", ["기획자 📊", "창업가 🚀", "마케팅 전문가 📣"]),
-    "ESFP": ("연예인", ["배우 🎭", "이벤트 플래너 🎉", "판매 전문가 🛍️"]),
-    "ISTJ": ("현실주의자", ["공무원 🧑‍💼", "회계사 📒", "법률 보조원 ⚖️"]),
-    "ENFP": ("활동가", ["광고 기획자 📺", "기자 📰", "디자이너 🎨"]),
-    "ISFJ": ("수호자", ["간호사 🩺", "사회복지사 🫂", "교사 👩‍🏫"]),
-    "ESTP": ("사업가", ["영업 전문가 📈", "기업가 🧑‍💼", "파일럿 ✈️"]),
-    # 필요 시 모든 MBTI 유형 추가 가능
+mbti_types = [
+    "ISTJ - 세상의 소금형 🧂", "ISFJ - 용감한 수호자 🛡️", "ISTP - 만능 재주꾼 🛠️", "ISFP - 호기심 많은 예술가 🎨",
+    "INTJ - 전략가 🧠", "INFJ - 옹호자 🕊️", "INTP - 논리적인 사색가 💡", "INFP - 열정적인 중재자 💖",
+    "ESTJ - 사업가 💼", "ESFJ - 사교적인 외교관 🤝", "ESTP - 모험을 즐기는 사업가 🎢", "ESFP - 자유로운 영혼의 연예인 🥳",
+    "ENTJ - 통솔자 👑", "ENFJ - 정의로운 사회운동가 💪", "ENTP - 뜨거운 논쟁을 즐기는 변론가 🗣️", "ENFP - 재기 발랄한 활동가 🤸‍♀️"
+]
+
+selected_mbti = st.selectbox(
+    "MBTI 유형을 선택해주세요:",
+    mbti_types,
+    index=0, # 기본값 설정
+    help="당신의 성격 유형을 선택해 직업 추천을 받아보세요!"
+)
+
+st.write(f"선택하신 MBTI는 **{selected_mbti.split(' - ')[0]}** 입니다! ✨")
+st.write("---")
+
+# --- 직업 추천 섹션 (MBTI별 직업 정보) ---
+st.header("2. 당신의 MBTI에 딱 맞는 직업을 추천해 드려요! 🎯")
+
+mbti_careers = {
+    "ISTJ": {
+        "description": "현실적이고 책임감이 강하며, 체계적인 업무에 능숙합니다. 꼼꼼하고 신뢰할 수 있는 당신에게 추천해요! 👍",
+        "jobs": ["회계사 💰", "감사관 🕵️‍♂️", "공무원 🏛️", "경찰관 👮‍♀️", "금융 분석가 📈", "교사 👩‍🏫"]
+    },
+    "ISFJ": {
+        "description": "배려심 깊고 성실하며, 타인을 돕는 일에서 보람을 느낍니다. 따뜻한 마음을 가진 당신에게 추천해요! 🤗",
+        "jobs": ["간호사 🧑‍⚕️", "사회복지사 💖", "유치원 교사 🍎", "사서 📚", "영양사 🥗", "인사 관리자 🧑‍💼"]
+    },
+    "ISTP": {
+        "description": "논리적이고 유연하며, 실제적인 문제 해결에 뛰어납니다. 손재주와 분석력을 가진 당신에게 추천해요! 🔧",
+        "jobs": ["엔지니어 ⚙️", "파일럿 ✈️", "데이터 분석가 📊", "경찰 특공대 🚔", "소방관 🚒", "목수 🔨"]
+    },
+    "ISFP": {
+        "description": "예술적이고 감수성이 풍부하며, 자유로운 환경에서 재능을 발휘합니다. 창의적인 당신에게 추천해요! 🌸",
+        "jobs": ["디자이너 🖌️", "사진작가 📸", "음악가 🎶", "요리사 🧑‍🍳", "동물 조련사 🐶", "작가 ✍️"]
+    },
+    "INTJ": {
+        "description": "독립적이고 전략적이며, 복잡한 문제를 해결하는 데 탁월합니다. 비판적 사고력을 가진 당신에게 추천해요! 🔭",
+        "jobs": ["과학자 🔬", "대학교수 🧑‍🏫", "변호사 ⚖️", "컴퓨터 프로그래머 💻", "건축가 🏗️", "전략 컨설턴트 📊"]
+    },
+    "INFJ": {
+        "description": "통찰력 있고 이상주의적이며, 타인의 성장을 돕는 데 열정을 가집니다. 깊은 이해심을 가진 당신에게 추천해요! 🌍",
+        "jobs": ["심리 상담사 🛋️", "작가 ✍️", "사회 운동가 ✊", "인사이드 커리어 코치 🧑‍🏫", "목사/성직자 ⛪", "예술가 🎭"]
+    },
+    "INTP": {
+        "description": "분석적이고 호기심이 많으며, 새로운 아이디어를 탐구하는 것을 좋아합니다. 논리적인 탐험가인 당신에게 추천해요! 🌌",
+        "jobs": ["연구원 🧪", "소프트웨어 개발자 👩‍💻", "철학자 📜", "수학자 📐", "경제학자 📈", "대학교수 🧑‍🏫"]
+    },
+    "INFP": {
+        "description": "창의적이고 이상주의적이며, 자신의 가치와 신념을 중요하게 생각합니다. 따뜻한 마음을 가진 예술가인 당신에게 추천해요! 🧚‍♀️",
+        "jobs": ["작가 ✍️", "그래픽 디자이너 🎨", "음악 치료사 🎶", "심리 상담사 🧘‍♀️", "사서 📚", "사회복지사 💖"]
+    },
+    "ESTJ": {
+        "description": "실용적이고 조직적이며, 리더십을 발휘하여 목표를 달성하는 데 능숙합니다. 계획적인 리더인 당신에게 추천해요! 🏢",
+        "jobs": ["경영자 🧑‍💼", "프로젝트 매니저 📋", "은행원 🏦", "행정 관리자 🏢", "판사 👨‍⚖️", "세일즈 매니저 📈"]
+    },
+    "ESFJ": {
+        "description": "사교적이고 협력적이며, 주변 사람들과의 조화를 중요하게 생각합니다. 친화력 있는 당신에게 추천해요! 🎉",
+        "jobs": ["교사 🧑‍🏫", "이벤트 플래너 🎊", "영업 사원 🛍️", "인사 담당자 👩‍💼", "간호사 🧑‍⚕️", "사회복지사 🤝"]
+    },
+    "ESTP": {
+        "description": "활동적이고 현실적이며, 즉흥적인 문제 해결에 뛰어납니다. 도전과 변화를 즐기는 당신에게 추천해요! 🏎️",
+        "jobs": ["기업가 🧑‍💻", "영업 전문가 📈", "경찰관 👮‍♂️", "운동선수 🏋️", "마케터 📊", "구급대원 🚑"]
+    },
+    "ESFP": {
+        "description": "활발하고 즉흥적이며, 사람들과 어울리는 것을 좋아합니다. 삶을 즐기는 엔터테이너인 당신에게 추천해요! 🥳",
+        "jobs": ["연예인 🎤", "이벤트 기획자 🎈", "유치원 교사 🧑‍🏫", "가이드 🗺️", "미용사 💇‍♀️", "사회복지사 🤝"]
+    },
+    "ENTJ": {
+        "description": "결단력 있고 리더십이 강하며, 장기적인 비전을 가지고 목표를 추진합니다. 타고난 리더인 당신에게 추천해요! 🚀",
+        "jobs": ["CEO 🏆", "변호사 ⚖️", "정치인 🏛️", "대학교수 🧑‍🏫", "컨설턴트 📊", "기업 전략가 📈"]
+    },
+    "ENFJ": {
+        "description": "열정적이고 카리스마 있으며, 타인에게 영감을 주고 이끄는 데 능숙합니다. 따뜻한 리더인 당신에게 추천해요! ✨",
+        "jobs": ["교사 🧑‍🏫", "정치인 🗣️", "상담사 💖", "HR 매니저 🧑‍💼", "목사/성직자 ⛪", "PR 전문가 📢"]
+    },
+    "ENTP": {
+        "description": "혁신적이고 통찰력 있으며, 새로운 아이디어를 탐구하고 토론하는 것을 즐깁니다. 영리한 변론가인 당신에게 추천해요! 🤯",
+        "jobs": ["변호사 ⚖️", "기업가 💡", "컨설턴트 📊", "발명가 ⚙️", "과학자 🧪", "마케팅 전략가 📈"]
+    },
+    "ENFP": {
+        "description": "재기 발랄하고 창의적이며, 사람들과의 상호작용에서 에너지를 얻습니다. 영감을 주는 활동가인 당신에게 추천해요! 💖",
+        "jobs": ["마케터 📢", "PR 전문가 📣", "심리 상담사 🛋️", "작가 ✍️", "이벤트 플래너 🥳", "교사 🧑‍🏫"]
+    }
 }
 
-# 🧠 사용자 입력
-selected_mbti = st.selectbox("당신의 MBTI 유형은 무엇인가요? 🔍", list(mbti_jobs.keys()))
+# 선택된 MBTI에 맞는 정보 가져오기
+mbti_code = selected_mbti.split(' - ')[0]
+info = mbti_careers.get(mbti_code, {"description": "정보를 찾을 수 없습니다.", "jobs": []})
 
-# 🎯 결과 출력
-if selected_mbti:
-    nickname, jobs = mbti_jobs[selected_mbti]
-    st.markdown(f"""
-        <div class="result-box">
-            <h2>✨ {selected_mbti} ({nickname}) 유형에게 어울리는 직업은?</h2>
-            <ul>
-                {"".join([f"<li style='font-size:20px;'>✅ {job}</li>" for job in jobs])}
-            </ul>
-            <p style='font-size:18px;'>🌟 꿈을 향해 도전해보세요!</p>
-        </div>
-    """, unsafe_allow_html=True)
+st.markdown(f"**{mbti_code}** 유형의 당신은... {info['description']} 🌟")
 
-# 🎁 Footer
-st.markdown("---")
-st.markdown("📚 진로교육 플랫폼 | 만든이: **ChatGPT + 너의 아이디어!** 🚀", unsafe_allow_html=True)
+if info['jobs']:
+    st.markdown("---")
+    st.subheader("추천 직업 리스트! 🤩")
+    # 직업 리스트를 2열로 멋지게 표시
+    cols = st.columns(2)
+    for i, job in enumerate(info['jobs']):
+        with cols[i % 2]:
+            st.markdown(f"👉 **{job}**")
+else:
+    st.error("앗! 이 MBTI 유형에 대한 직업 정보를 찾을 수 없어요. 😥")
+
+st.write("---")
+
+# --- 추가 정보 섹션 ---
+st.header("3. 꿈을 향한 여정을 응원합니다! 💖")
+st.write("MBTI는 당신의 성격을 이해하는 도구일 뿐, 당신의 잠재력은 무한합니다! 💪")
+st.markdown("더 많은 정보와 고민이 있다면 언제든지 찾아보세요! 📚")
+
+st.info("💡 **팁:** MBTI 유형은 시간이 지나며 바뀔 수도 있으니, 주기적으로 자신을 돌아보는 시간을 가져보세요! 🌱")
+
+# --- Footer ---
+st.write("---")
+st.markdown("✨ **제작:** AI 진로 탐색 도우미 🤖 | **버전:** 1.0 🚀")
+st.markdown("Made with ❤️ for your bright future! 🌟")
+
+# 이모티콘 팡팡 터뜨리기 🎆
+st.balloons()
