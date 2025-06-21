@@ -9,7 +9,7 @@ st.title("🧑‍🎓 전국 청소년 상담복지센터 위치 지도")
 # 데이터 로드
 @st.cache_data
 def load_data():
-    df = pd.read_csv("여성가족부_청소년상담복지센터 현황_20241029 (1).csv", encoding='utf-8')
+    df = pd.read_csv("cs.csv", encoding='utf-8')
     df = df.dropna(subset=["위도", "경도"])  # 위도/경도 없는 행 제거
     return df
 
