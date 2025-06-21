@@ -3,64 +3,59 @@ import yfinance as yf
 import plotly.graph_objs as go
 from datetime import datetime, timedelta
 
-# 페이지 설정
-st.set_page_config(page_title="Top10 시가총액 주가 변화", layout="wide")
+# 📅 날짜 설정
+end = datetime.today()
+start = end - timedelta(days=365)
 
-st.title("📈 글로벌 시가총액 Top10 기업 - 최근 1년 주가 변화")
-
-# ✅ 검증된 티커 목록 (미국 기업)
+# ✅ 안정적으로 작동하는 미국 상장사 Top 5 (검증용)
 tickers = {
     "Apple": "AAPL",
     "Microsoft": "MSFT",
-    "Amazon": "AMZN",
     "Nvidia": "NVDA",
-    "Alphabet (Google)": "GOOGL",
-    "Meta (Facebook)": "META",
-    "Tesla": "TSLA",
-    "Berkshire Hathaway": "BRK-B",
-    "Eli Lilly": "LLY",
-    "Visa": "V"
+    "Amazon": "AMZN",
+    "Meta": "META"
 }
 
-# 기간 설정 (최근 1년)
-end_date = datetime.today()
-start_date = end_date - timedelta(days=365)
+# Streamlit 앱 설정
+st.set_page_config(page_title="Top5 주가 변화", layout="wide")
+st.title("📈 글로벌 시가총액 Top5 기업 주가 변화 (1년)")
+st.markdown("💡 데이터 출처: Yahoo Finance (yfinance)")
 
-# 📦 데이터 수집
+# 📥 데이터 수집
 @st.cache_data
-def get_data():
-    price_data = {}
+def fetch_prices():
+    all_data = {}
     for name, ticker in tickers.items():
-        df = yf.download(ticker, start=start_date, end=end_date)
+        df = yf.download(ticker, start=start, end=end)
         if not df.empty:
-            price_data[name] = df["Close"]
-    return price_data
+            all_data[name] = df['Close']
+    return all_data
 
-data = get_data()
+prices = fetch_prices()
 
-# ⚠️ 데이터가 없으면 메시지 표시
-if not data:
-    st.error("❌ 주가 데이터를 불러오지 못했습니다. 나중에 다시 시도해주세요.")
+# ✅ 데이터 확인
+if not prices:
+    st.error("❌ 데이터를 불러올 수 없습니다. 인터넷 연결 또는 Yahoo Finance 서버를 확인하세요.")
 else:
-    # 📊 Plotly 그래프 생성
+    # 📊 Plotly 그래프 그리기
     fig = go.Figure()
-    for name, prices in data.items():
+
+    for name, series in prices.items():
         fig.add_trace(go.Scatter(
-            x=prices.index,
-            y=prices.values,
+            x=series.index,
+            y=series.values,
             mode='lines',
             name=name
         ))
 
     fig.update_layout(
-        title="📊 글로벌 Top10 기업의 주가 추이 (1년)",
+        title="📊 최근 1년간 주가 변화 (Top 5 기업)",
         xaxis_title="날짜",
         yaxis_title="종가 (USD)",
-        hovermode="x unified",
         template="plotly_white",
+        hovermode="x unified",
         height=600,
         legend=dict(orientation="h", yanchor="bottom", y=-0.3)
     )
 
-    # 차트 출력
     st.plotly_chart(fig, use_container_width=True)
