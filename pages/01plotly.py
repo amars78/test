@@ -3,11 +3,11 @@ import yfinance as yf
 import plotly.graph_objs as go
 from datetime import datetime, timedelta
 
-# 📅 날짜 설정
-end = datetime.today()
-start = end - timedelta(days=365)
+# 📅 기간 설정 (최근 1년)
+end_date = datetime.today()
+start_date = end_date - timedelta(days=365)
 
-# ✅ 안정적으로 작동하는 미국 상장사 Top 5 (검증용)
+# ✅ 시가총액 상위 5개 미국 기업
 tickers = {
     "Apple": "AAPL",
     "Microsoft": "MSFT",
@@ -16,46 +16,48 @@ tickers = {
     "Meta": "META"
 }
 
-# Streamlit 앱 설정
-st.set_page_config(page_title="Top5 주가 변화", layout="wide")
-st.title("📈 글로벌 시가총액 Top5 기업 주가 변화 (1년)")
-st.markdown("💡 데이터 출처: Yahoo Finance (yfinance)")
+# 🌐 페이지 설정
+st.set_page_config(page_title="선형 주가 그래프", layout="wide")
+st.title("📈 글로벌 시가총액 Top 5 기업의 선형 주가 변화 그래프")
 
-# 📥 데이터 수집
+# 📥 주가 데이터 로딩
 @st.cache_data
-def fetch_prices():
-    all_data = {}
+def load_data():
+    stock_data = {}
     for name, ticker in tickers.items():
-        df = yf.download(ticker, start=start, end=end)
+        df = yf.download(ticker, start=start_date, end=end_date)
         if not df.empty:
-            all_data[name] = df['Close']
-    return all_data
+            stock_data[name] = df["Close"]
+    return stock_data
 
-prices = fetch_prices()
+data = load_data()
 
-# ✅ 데이터 확인
-if not prices:
-    st.error("❌ 데이터를 불러올 수 없습니다. 인터넷 연결 또는 Yahoo Finance 서버를 확인하세요.")
+# ✅ 그래프 출력
+if not data:
+    st.error("❌ 데이터를 불러올 수 없습니다. 인터넷 연결 또는 티커 확인 필요.")
 else:
-    # 📊 Plotly 그래프 그리기
     fig = go.Figure()
 
-    for name, series in prices.items():
+    # 각 기업마다 선형 그래프 추가
+    for company, close_prices in data.items():
         fig.add_trace(go.Scatter(
-            x=series.index,
-            y=series.values,
+            x=close_prices.index,
+            y=close_prices.values,
             mode='lines',
-            name=name
+            name=company,
+            line=dict(shape='linear')  # 👈 선형
         ))
 
+    # 레이아웃 구성
     fig.update_layout(
-        title="📊 최근 1년간 주가 변화 (Top 5 기업)",
+        title="📊 최근 1년간 글로벌 Top 5 기업 주가 (선형 그래프)",
         xaxis_title="날짜",
         yaxis_title="종가 (USD)",
-        template="plotly_white",
         hovermode="x unified",
+        template="plotly_white",
         height=600,
         legend=dict(orientation="h", yanchor="bottom", y=-0.3)
     )
 
+    # 📊 그래프 출력
     st.plotly_chart(fig, use_container_width=True)
