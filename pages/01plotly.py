@@ -1,14 +1,13 @@
 import streamlit as st
 import yfinance as yf
-import pandas as pd
-import matplotlib.pyplot as plt
+import plotly.graph_objs as go
 from datetime import datetime, timedelta
 
-# 📅 기간 설정
-end_date = datetime.today()
-start_date = end_date - timedelta(days=365)
+# ✅ Streamlit 페이지 설정
+st.set_page_config(page_title="Top 5 주가 시각화", layout="wide")
+st.title("📈 글로벌 시가총액 Top 5 기업의 최근 1년 주가 변화")
 
-# 🔝 Top 5 기업 티커
+# 🔝 시가총액 기준 Top 5 기업 (미국)
 top5_tickers = {
     "Apple": "AAPL",
     "Microsoft": "MSFT",
@@ -17,44 +16,47 @@ top5_tickers = {
     "Alphabet (Google)": "GOOGL"
 }
 
-# 📥 데이터 수집 함수
+# 📅 최근 1년 범위
+end_date = datetime.today()
+start_date = end_date - timedelta(days=365)
+
+# 📦 주가 데이터 불러오기
 @st.cache_data
-def fetch_top5_stock_data():
-    stock_data = {}
+def fetch_stock_data():
+    data = {}
     for name, ticker in top5_tickers.items():
         df = yf.download(ticker, start=start_date, end=end_date)
         if not df.empty:
-            stock_data[name] = df["Close"]
-    combined_df = pd.DataFrame(stock_data)
-    combined_df.dropna(inplace=True)
-    return combined_df
+            data[name] = df["Close"]
+    return data
 
-# 📈 선형 그래프 함수
-def plot_stock_prices(df):
-    fig, ax = plt.subplots(figsize=(12, 6))
-    for company in df.columns:
-        ax.plot(df.index, df[company], label=company)
+# 데이터 수집
+stock_data = fetch_stock_data()
 
-    ax.set_title("📈 글로벌 Top 5 기업 최근 1년 주가 변화", fontsize=16)
-    ax.set_xlabel("날짜")
-    ax.set_ylabel("주가 (USD)")
-    ax.legend()
-    ax.grid(True)
-    return fig
-
-# ✅ Streamlit 앱 시작
-st.set_page_config(page_title="Top 5 선형 주가 그래프", layout="wide")
-st.title("🌍 글로벌 시가총액 Top 5 기업의 선형 주가 그래프")
-
-# 📦 데이터 로딩
-df = fetch_top5_stock_data()
-
-if df.empty:
+# ✅ Plotly 선형 그래프
+if not stock_data:
     st.error("❌ 주가 데이터를 불러오지 못했습니다.")
 else:
-    st.write("✅ 최근 1년 간 주가 데이터 (종가 기준)")
-    st.dataframe(df.tail())
+    fig = go.Figure()
 
-    # 📊 선형 그래프 출력
-    fig = plot_stock_prices(df)
-    st.pyplot(fig)
+    for name, prices in stock_data.items():
+        fig.add_trace(go.Scatter(
+            x=prices.index,
+            y=prices.values,
+            mode='lines',
+            name=name
+        ))
+
+    fig.update_layout(
+        title="📊 글로벌 Top 5 기업 주가 변화 (최근 1년)",
+        xaxis_title="날짜",
+        yaxis_title="종가 (USD)",
+        template="plotly_white",
+        hovermode="x unified",
+        height=600,
+        legend=dict(orientation="h", yanchor="bottom", y=-0.3)
+    )
+
+    st.plotly_chart(fig, use_container_width=True)
+
+    st.markdown("💡 데이터를 확대하거나 마우스를 올려서 세부 정보를 확인해보세요.")
