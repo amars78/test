@@ -40,13 +40,46 @@ df = pd.DataFrame(data, columns=columns)
 
 st.title("📍 내 위치에서 가까운 청소년 상담센터 찾기")
 
-# 사용자 위치 입력
-st.subheader("🧭 현재 위치 입력")
-col1, col2 = st.columns(2)
-with col1:
-    user_lat = st.number_input("현재 위도 입력", value=37.5665, format="%.6f")
-with col2:
-    user_lon = st.number_input("현재 경도 입력", value=126.9780, format="%.6f")
+# 브라우저 위치 권한 요청
+st.subheader("🧭 내 위치 자동 가져오기")
+st.markdown("다음 위치 버튼을 클릭해 브라우저에서 위치를 받아옵니다.")
+
+# JavaScript 삽입하여 브라우저 위치 가져오기
+st.components.v1.html("""
+    <script>
+    navigator.geolocation.getCurrentPosition(
+        function(position) {
+            const coords = {
+                lat: position.coords.latitude,
+                lon: position.coords.longitude
+            };
+            const iframe = window.parent.document.querySelector('iframe');
+            iframe.contentWindow.postMessage(coords, '*');
+        },
+        function(error) {
+            console.error('위치 정보를 가져오는 데 실패했습니다.', error);
+        });
+    </script>
+""", height=0)
+
+# 기본 위치
+if "user_lat" not in st.session_state:
+    st.session_state.user_lat = 37.5665
+if "user_lon" not in st.session_state:
+    st.session_state.user_lon = 126.9780
+
+# 위치 데이터 수신
+def handle_location():
+    import streamlit_javascript as stj
+    coords = stj.st_javascript("window.addEventListener('message', (e) => window._coords = e.data);
+                                 window._coords")
+    if coords and "lat" in coords and "lon" in coords:
+        st.session_state.user_lat = coords["lat"]
+        st.session_state.user_lon = coords["lon"]
+handle_location()
+
+user_lat = st.session_state.user_lat
+user_lon = st.session_state.user_lon
 
 # 거리 계산 함수
 def get_nearest_center(user_lat, user_lon):
