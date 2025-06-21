@@ -71,3 +71,11 @@ else:
 
         except Exception as e:
             st.error(f"❌ **{company_name} ({ticker})** 의 데이터를 가져오거나 시각화하는 중 오류가 발생했습니다: {e}")
+
+st.markdown("""
+---
+**참고:**
+* 위 시가총액 Top 10 리스트는 변동될 수 있습니다. (2025년 6월 21일 기준 추정)
+* 사우디 아람코(2222.SR)와 같은 일부 해외 기업은 데이터 로딩이 느리거나, Yahoo Finance에서 제공하는 데이터가 제한적일 수 있습니다.
+* `yfinance` 라이브러리는 Yahoo Finance의 데이터를 기반으로 하므로, Yahoo Finance의 데이터 제공 정책에 따라 데이터에 접근이 제한될 수 있습니다.
+""")
