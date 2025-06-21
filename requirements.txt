@@ -1,5 +1,7 @@
+
+
 folium
-streamlit_folium
+streamlit
 pandas
-polotly
+plotly
 yfinance
