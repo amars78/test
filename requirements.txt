@@ -1,5 +1,7 @@
 folium
+streamlit
 streamlit_folium
 pandas
 plotly
 yfinance
+matplotlib
